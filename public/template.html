@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IIT Roorkee Virtual Lab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #fff; }
+        .navbar-brand img { height: 50px; }
+        .jumbotron { margin-top: 40px; background: #ececec; }
+        .vlabs-footer { background: #3786c2; color: #fff; padding: 30px 0; margin-top: 30px;}
+        .sidebar { background: #f9f9f9; border-right: 1px solid #ddd; min-height: 85vh; }
+        .sidebar .nav>li>a { color: #2360a7; font-weight: bold; }
+        .sidebar .nav>li.active>a,
+        .sidebar .nav>li>a:focus,
+        .sidebar .nav>li>a:hover { background: #e1eafc !important; color: #2360a7; }
+        .vlabs-logo { margin-top: 8px; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+<!-- HEADER BAR -->
+<div class="container-fluid" style="background:#3786c2;">
+    <div class="row">
+        <div class="col-xs-12 text-center" style="color:white; padding:7px 0;">
+            <span style="font-size:18px;letter-spacing:1px;"><b>भारतीय प्रौद्योगिकी संस्थान रुड़की</b> | Indian Institute of Technology Roorkee</span>
+        </div>
+    </div>
+</div>
+
+<!-- LANDING PAGE -->
+<div id="landing-section">
+    <div class="container">
+        <div class="jumbotron text-center">
+            <button class="btn btn-primary btn-lg" id="explore-btn">Explore</button>
+        </div>
+        <div class="text-center" style="margin:30px 0;">
+            <img src="images/iitrLogo.png" alt="IITR Logo" width="75" height="90" class="vlabs-logo"
+                 onerror="this.style.display='none';"> <!-- hides broken image if not present -->
+            <h3>This lab is contributed by IIT Roorkee</h3>
+        </div>
+    </div>
+    <div class="vlabs-footer">
+        <div class="container">
+            <h2>Vlabs-Dev Team</h2>
+            <p>INDIAN INSTITUTE OF TECHNOLOGY ROORKEE<br>ROORKEE, UTTARAKHAND, INDIA</p>
+        </div>
+    </div>
+</div>
+
+<!-- DASHBOARD (hidden initially) -->
+<div id="dashboard-section" style="display:none;">
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Sidebar Menu -->
+            <div class="col-sm-3 sidebar">
+                <ul class="nav nav-pills nav-stacked" style="margin-top:30px;" id="dashboard-menu">
+                    <li class="active"><a href="#" data-tab="aim">Aim</a></li>
+                    <li><a href="#" data-tab="theory">Theory</a></li>
+                    <li><a href="#" data-tab="pretest">Pretest</a></li>
+                    <li><a href="#" data-tab="procedure">Procedure</a></li>
+                    <li><a href="#" data-tab="simulation">Simulation</a></li>
+                    <li><a href="#" data-tab="posttest">Posttest</a></li>
+                    <li><a href="#" data-tab="references">References</a></li>
+                    <li><a href="#" data-tab="feedback">Feedback</a></li>
+                </ul>
+            </div>
+
+            <!-- Content Area -->
+            <div class="col-sm-9" style="padding:40px;">
+                <div id="tab-aim" class="dashboard-tab">
+                    <h2>Aim</h2>
+                    <p>Your experiment aim goes here.</p>
+                </div>
+                <div id="tab-theory" class="dashboard-tab" style="display:none;">
+                    <h2>Theory</h2>
+                    <p>Theory content goes here.</p>
+                </div>
+                <div id="tab-pretest" class="dashboard-tab" style="display:none;">
+                    <h2>Pretest</h2>
+                    <p>Pretest questions or instructions.</p>
+                </div>
+                <div id="tab-procedure" class="dashboard-tab" style="display:none;">
+                    <h2>Procedure</h2>
+                    <p>Procedure steps of your experiment.</p>
+                </div>
+                <div id="tab-simulation" class="dashboard-tab" style="display:none;">
+                    <h2>Simulation</h2>
+                    <!-- ===== PLACE YOUR PROJECT/EXPERIMENT UI HERE ===== -->
+                    <div id="my-simulation-ui">
+                        <!-- This is where your own code goes. Insert your HTML, Canvas, or JS widgets here. -->
+                        <p>[Your interactive simulation will appear here. Replace this line with your code.]</p>
+                    </div>
+                </div>
+                <div id="tab-posttest" class="dashboard-tab" style="display:none;">
+                    <h2>Posttest</h2>
+                    <p>Posttest quiz or follow-ups.</p>
+                </div>
+                <div id="tab-references" class="dashboard-tab" style="display:none;">
+                    <h2>References</h2>
+                    <p>Reference materials and links.</p>
+                </div>
+                <div id="tab-feedback" class="dashboard-tab" style="display:none;">
+                    <h2>Feedback</h2>
+                    <p>Feedback form or survey link.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap & jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script>
+// Transition from landing to dashboard on "Explore" click
+$('#explore-btn').on('click', function() {
+    $('#landing-section').hide();
+    $('#dashboard-section').show();
+});
+
+// Sidebar navigation for dashboard tabs
+$('#dashboard-menu a').on('click', function(e){
+    e.preventDefault();
+    $('#dashboard-menu li').removeClass('active');
+    $(this).parent().addClass('active');
+    var sel = $(this).data('tab');
+    $('.dashboard-tab').hide();
+    $('#tab-' + sel).show();
+});
+</script>
+</body>
+</html>
