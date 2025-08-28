@@ -1,0 +1,138 @@
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f8fafc;
+  margin: 0;
+  padding: 0;
+}
+
+/* Main grid: Left = ray path/controls/heatmap. Right = stats/L-curve. */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two big equal columns */
+  gap: 38px 24px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 24px #dae4ef;
+  max-width: 1600px;
+  min-height: 90vh;
+  margin: 40px auto 24px auto;
+  padding: 44px 40px 44px 48px;
+  box-sizing: border-box;
+}
+
+/* Left column: raypath and controls */
+.top-left {
+  grid-column: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Ray plot container */
+.plot-container {
+  flex: 1 1 auto;
+  min-height: 390px;
+  margin-bottom: 24px;
+}
+
+#plot {
+  width: 100%;
+  min-height: 380px;
+  max-width: 100%;
+}
+
+/* Heatmap controls and output */
+#heatmap-controls {
+  margin-top: 22px;
+}
+#combined-heatmap {
+  margin-top: 22px;
+}
+
+/* Hide border on inner image if not shown */
+#combined-heatmap:not([src]) {
+  border: none;
+}
+
+/* Right column: stats card + L-curve */
+.top-right {
+  grid-column: 2;
+  min-width: 0;
+  background: #f4f7fa;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px #e7ebf3;
+  padding: 28px 24px 24px 30px;
+  font-size: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  max-height: none;
+  overflow: visible;
+}
+
+/* Info hierarchy */
+.stats-card > div {
+  margin-bottom: 12px;
+}
+.section-title {
+  margin: 0 0 8px 0;
+  font-size: 1.12em;
+  font-weight: 600;
+  color: #234;
+}
+
+/* Controls styling */
+input[type="text"], select {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #bbb;
+  font-size: 15px;
+  margin-right: 10px;
+  max-width: 160px;
+}
+button {
+  padding: 8px 18px;
+  border-radius: 5px;
+  font-size: 15px;
+  background: linear-gradient(135deg, #268bf6, #126af6);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+button:hover {
+  background: linear-gradient(135deg, #126af6, #126a88);
+}
+
+/* Plotly and equation area */
+#lcurve-plot {
+  margin-top: 4px;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 1200px) {
+  .main-grid {
+    max-width: 98vw;
+    padding: 18px 2vw 18px 2vw;
+    gap: 12px;
+  }
+}
+@media (max-width: 900px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, min-content);
+    min-height: unset;
+    padding: 8px 1vw 10px 1vw;
+    gap: 10px;
+  }
+  .top-left, .top-right {
+    grid-column: 1;
+    width: 100%;
+    max-width: 100%;
+  }
+  .plot-container, #plot {
+    min-width: 97vw !important;
+    box-sizing: border-box;
+  }
+}

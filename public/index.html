@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Borehole SVD Heatmaps</title>
+
+  <!-- Link your CSS -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- KaTeX for rendering SVD equation -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body);"></script>
+
+  <!-- Plotly for L-curve placeholder -->
+  <script src="https://cdn.plot.ly/plotly-2.31.1.min.js"></script>
+  <!-- D3 for ray path diagram -->
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+<body>
+  <div class="main-grid">
+    <!-- Left half: Ray path grid and controls -->
+    <div class="top-left raypath-card">
+      <h2 style="margin-top: 0;">SVD Borehole Visualization</h2>
+
+      <div id="depth-selection" style="margin-bottom:15px;">
+        <label for="source-depth"><b>Source depth:</b></label>
+        <select id="source-depth"></select>
+        <button id="reload-button" style="margin-left:12px;">Reload Ray Paths</button>
+      </div>
+
+      <div class="plot-container">
+        <div id="plot"></div>
+      </div>
+
+      <div id="heatmap-controls" style="margin-top: 18px;">
+        <label for="k-values"><b>Singular values to use (K):</b></label><br/>
+        <input id="k-values" type="text" placeholder="e.g. 5,10,20" />
+        <button id="generate-heatmap-btn" style="margin-left: 10px;">Generate Heatmap</button>
+      </div>
+
+      <div style="margin-top: 18px; text-align: center;">
+        <img id="combined-heatmap" alt="Combined Heatmap" style="max-width: 98%; border: 1px solid #ccc; display:none; border-radius: 8px;" />
+      </div>
+    </div>
+
+    <!-- Right half: Stats card and L-curve -->
+    <div class="top-right stats-card">
+      <h3 class="section-title">Inversion Stats</h3>
+      <div><b>Matrix rank:</b> <span id="matrix-rank">--</span></div>
+      <div><b># Singular values:</b> <span id="num-singular">--</span></div>
+      <div><b># Data points:</b> <span id="num-data">--</span></div>
+      <div><b># Model params:</b> <span id="num-model">--</span></div>
+      <div><b>Type:</b> <span id="data-type">--</span></div>
+
+      <div style="margin: 20px 0 0 0;">
+        <b>SVD equation:</b>
+        <div id="svd-equation" style="margin-top: 10px;"></div>
+      </div>
+
+      <div style="margin-top: 30px;">
+        <h3 class="section-title">L-curve</h3>
+        <div id="lcurve-plot" style="height: 260px; background:#fafcff; border-radius:8px; border:1px solid #eee;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>
