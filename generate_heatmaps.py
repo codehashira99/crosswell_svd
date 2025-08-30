@@ -38,13 +38,22 @@ for k in ks:
 with open("data.json", "w") as f:
     json.dump({"heatmaps": heatmaps}, f, indent=2)
 
-# Now plot heatmaps in a 3x2 grid (spacious, not vertical stack!)
+# ---- UPDATED LAYOUT CODE -----
 num_maps = len(heatmaps)
-ncols = 3
-nrows = math.ceil(num_maps / ncols)
+max_cols = 4
+ncols = min(max_cols, num_maps)
+nrows = int(np.ceil(num_maps / ncols))
 
-fig, axs = plt.subplots(nrows, ncols, figsize=(15, 10))
-axs = axs.flatten()  # to easily index as 1D
+fig_w = 4 * ncols    # 4 inches per column
+fig_h = 4 * nrows    # 4 inches per row
+
+fig, axs = plt.subplots(nrows, ncols, figsize=(fig_w, fig_h))
+
+# When axs is not a 2D array, flatten to 1D for easy indexing
+if nrows == 1 and ncols == 1:
+    axs = np.array([axs])
+else:
+    axs = axs.flatten()
 
 cmap = LinearSegmentedColormap.from_list("yellow_green", ["yellow", "green"])
 
