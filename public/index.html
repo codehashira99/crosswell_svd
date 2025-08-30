@@ -30,14 +30,58 @@
         <button id="reload-button" style="margin-left:12px;">Reload Ray Paths</button>
       </div>
 
-      <div class="plot-container">
-        <div id="plot"></div>
+      <!-- NEW: Ray path pattern selector -->
+      <div id="ray-pattern-selection" style="margin: 15px 0;">
+        <label for="ray-pattern"><b>Ray path pattern:</b></label>
+        <select id="ray-pattern" style="margin-left: 10px;">
+          <option value="fan">Fan</option>
+          <option value="single">Single</option>
+          <option value="crossing">Crossing</option>
+        </select>
       </div>
+
+      <div class="plot-container" style="width: 100%;min-height: 700px;
+      display:flex;justify-content:center;align-items:center;">
+   <div id="plot" style="width: 100%; height: 700px;min-height:600px;"></div>
+</div>
+
 
       <div id="heatmap-controls" style="margin-top: 18px;">
         <label for="k-values"><b>Singular values to use (K):</b></label><br/>
         <input id="k-values" type="text" placeholder="e.g. 5,10,20" />
         <button id="generate-heatmap-btn" style="margin-left: 10px;">Generate Heatmap</button>
+      </div>
+        
+      <!-- NEW: PNG pop-up button -->
+      <div style="margin-top: 15px; text-align: center;">
+        <button id="show-png-btn" style="padding: 8px 16px; cursor: pointer;">Show SVD Diagram PNG</button>
+      </div>
+
+      <!-- NEW: PNG Modal -->
+      <div id="svg-modal" style="
+        display:none;
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.6);
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      ">
+      <span id="close-modal" style="
+          position: absolute;
+          top: 20px;
+          right: 30px;
+          font-size: 36px;
+          color: white;
+          cursor: pointer;
+          user-select: none;
+        ">&times;</span>
+        <img id="modal-img" style="
+          max-width: 90vw;
+          max-height: 90vh;
+          border-radius: 8px;
+          box-shadow: 0 0 15px black;
+        "/>
       </div>
 
       <div style="margin-top: 18px; text-align: center;">

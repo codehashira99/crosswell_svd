@@ -8,6 +8,11 @@ const PORT = 3000;
 // Middleware to parse JSON bodies
 app.use(express.json());
 
+// Serve template.html explicitly on root '/'
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname,'public', 'template.html'));
+});
+
 // Serve static frontend files from 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -19,9 +24,9 @@ app.post('/generate-heatmap', (req, res) => {
   if (!Array.isArray(ks)) {
     return res.status(400).json({ error: 'ks must be an array of integers' });
   }
-  ks = ks.filter(k => Number.isInteger(k)).slice(0, 6);
-  if (ks.length < 2) {
-    return res.status(400).json({ error: 'Provide at least 2 integer K values, max 6' });
+  ks = ks.filter(k => Number.isInteger(k)).slice(0, 8);
+  if (ks.length < 1) {
+    return res.status(400).json({ error: 'Provide at least 1 integer K value, max 8' });
   }
 
   const pythonScript = path.join(__dirname, 'generate_heatmaps.py');
