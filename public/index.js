@@ -50,8 +50,13 @@ document.addEventListener("DOMContentLoaded", () => {
   reloadSVG(globalSelectedIndex, globalPattern);
 
   document.getElementById("source-depth").addEventListener("change", (e) => {
-    globalSelectedIndex = parseInt(e.target.value);
-    reloadSVG(globalSelectedIndex, globalPattern);
+    const val = e.target.value;
+  if (val === "all") {
+    reloadSVG("all", "crossing");
+  } else {
+    globalSelectedIndex = parseInt(val);
+    reloadSVG(globalSelectedIndex, "fan");
+  }
   });
 
   // PNG pop-up on "Show SVD Diagram PNG" button if present
@@ -97,22 +102,49 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function showCombinedHeatmap(src) {
-    // Hide any in-page static img
-    const heatMapDiv = document.getElementById("heatMap");
-    if (heatMapDiv) heatMapDiv.style.display = "none";
-    // Show modal when heatmap is loaded
-    const img = document.getElementById("modal-img");
-    if (img && modal) {
-      img.src = src.includes("?t=") ? src : src + "?t=" + Date.now(); // avoid double ?t
-      img.onload = function() {
-        modal.style.display = "flex";
-      };
-    }
+  // Hide any in-page static image if present
+  const heatMapDiv = document.getElementById("heatMap");
+  if (heatMapDiv) heatMapDiv.style.display = "none";
+
+  // Get modal and modal image container elements
+  const modal = document.getElementById("svg-modal");
+  const modalContent = document.getElementById("modal-img-container");
+
+  if (modal && modalContent) {
+    // Clear previous images
+    modalContent.innerHTML = "";
+
+    // Add the image (your src) with cache busting
+    const img = document.createElement("img");
+    img.src = src.includes("?t=") ? src : src + "?t=" + Date.now();
+    img.style.maxWidth = "90vw";
+    img.style.maxHeight = "80vh";
+
+    // When image loads, show modal
+    img.onload = function() {
+      modal.style.display = "flex";
+    };
+
+    modalContent.appendChild(img);
   }
+}
+
+// Modal close handler should be set once in your JS initialization
+document.getElementById("close-modal").onclick = function() {
+  document.getElementById("svg-modal").style.display = "none";
+};
+
 
   function populateDepthDropdown() {
     const depthDropdown = document.getElementById("source-depth");
     depthDropdown.innerHTML = "";
+
+    // Add the ALL option at the top
+    let optionAll = document.createElement("option");
+    optionAll.value = "all";
+    optionAll.text = "ALL (CROSSING)";
+    depthDropdown.appendChild(optionAll);
+
     const dz = 100, z_min = 100, z_max = 1600;
     let zs = [];
     for (let z = z_min; z <= z_max; z += dz) zs.push(z);
@@ -125,25 +157,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function reloadSVG(selectedIndex, pattern) {
-  pattern = pattern || "fan";
-  globalSelectedIndex = selectedIndex;
-
+  function reloadSVG(selectedIndex) {
   const svgContainer = document.getElementById("plot");
   svgContainer.innerHTML = "";
 
-  // New, larger SVG design space
+  // Larger SVG design space
   const svgWidth = 1200, svgHeight = 1000;
   const srcX = 150;
   const recX = svgWidth - 150;
 
-  // How many points? Set per your dropdown/depth list
-  // If populating 17 points in dropdown:
+  // Number of source/receiver points (adjust for your dropdown!)
   const N = 17;
   const marginTop = 80, marginBot = 80;
   const plotHeight = svgHeight - marginTop - marginBot;
 
-  // Calculate vertical y positions evenly spaced
+  // Vertical positions
   const yPosArr = Array.from({length: N}, (_, i) =>
     marginTop + i * (plotHeight / (N - 1))
   );
@@ -156,7 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .attr("preserveAspectRatio", "xMidYMid meet")
     .style("background-color", "white");
 
-  // Add grid (optional, can increase gridSpacing or remove for clarity)
+  // Grid (optional)
   const gridSpacing = 50;
   for (let x = 0; x <= svgWidth; x += gridSpacing) {
     svg.append("line")
@@ -171,27 +199,29 @@ document.addEventListener("DOMContentLoaded", () => {
       .attr("stroke", "#eee").attr("stroke-width", 1);
   }
 
-  // Draw well lines (always full height now)
+  // Well lines
   svg.append("line").attr("x1", srcX).attr("y1", 0).attr("x2", srcX).attr("y2", svgHeight).attr("stroke", "black").attr("stroke-width", 5);
   svg.append("line").attr("x1", recX).attr("y1", 0).attr("x2", recX).attr("y2", svgHeight).attr("stroke", "black").attr("stroke-width", 5);
 
-  // Draw source circles (clickable)
+  // Source circles (clickable unless 'all')
   yPosArr.forEach((y, i) => {
     svg.append("circle")
       .attr("cx", srcX)
       .attr("cy", y)
-      .attr("r", i === selectedIndex ? 14 : 9)
-      .style("fill", i === selectedIndex ? "#FF7F50" : "#FFB6B9")
+      .attr("r", selectedIndex !== "all" && i === selectedIndex ? 14 : 9)
+      .style("fill", selectedIndex !== "all" && i === selectedIndex ? "#FF7F50" : "#FFB6B9")
       .style("stroke", "black")
-      .style("cursor", "pointer")
+      .style("cursor", selectedIndex !== "all" ? "pointer" : "default")
       .on("click", function () {
-        globalSelectedIndex = i;
-        document.getElementById("source-depth").selectedIndex = i;
-        reloadSVG(i, globalPattern);
+        if (selectedIndex !== "all") {
+          globalSelectedIndex = i;
+          document.getElementById("source-depth").selectedIndex = i + 1; // +1 because 'ALL' is 0
+          reloadSVG(i);
+        }
       });
   });
 
-  // Draw receiver circles
+  // Receiver circles
   yPosArr.forEach((y) => {
     svg.append("circle")
       .attr("cx", recX)
@@ -201,8 +231,23 @@ document.addEventListener("DOMContentLoaded", () => {
       .style("stroke", "black");
   });
 
-  // Draw rays by pattern (use yPosArr for both)
-  if (pattern === "fan") {
+  // Draw "CROSSING" pattern if 'ALL' selected; otherwise draw "FAN"
+  if (selectedIndex === "all") {
+    // Crossing: blue or purple for all-to-all
+    yPosArr.forEach((sy) => {
+      yPosArr.forEach((ry) => {
+        svg.append("line")
+          .attr("x1", srcX)
+          .attr("y1", sy)
+          .attr("x2", recX)
+          .attr("y2", ry)
+          .attr("stroke", "#C058F3")
+          .attr("stroke-width", 1.2)
+          .attr("opacity", 0.25);
+      });
+    });
+  } else {
+    // Normal fan
     yPosArr.forEach(receiverY => {
       svg.append("line")
         .attr("x1", srcX)
@@ -213,41 +258,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .attr("stroke-width", 3)
         .attr("opacity", 0.7);
     });
-  } else if (pattern === "single") {
-    const mid = Math.floor(yPosArr.length / 2);
-    svg.append("line")
-      .attr("x1", srcX)
-      .attr("y1", yPosArr[selectedIndex])
-      .attr("x2", recX)
-      .attr("y2", yPosArr[mid])
-      .attr("stroke", "navy")
-      .attr("stroke-width", 5)
-      .attr("opacity", 1.0);
-  } else if (pattern === "crossing") {
-    yPosArr.forEach((sy) => {
-      yPosArr.forEach((ry) => {
-        svg.append("line")
-          .attr("x1", srcX)
-          .attr("y1", sy)
-          .attr("x2", recX)
-          .attr("y2", ry)
-          .attr("stroke", "#C058F3")
-          .attr("stroke-width", 1.5)
-          .attr("opacity", 0.18);
-      });
-    });
-    // Highlight active fan
-    yPosArr.forEach(receiverY => {
-      svg.append("line")
-        .attr("x1", srcX)
-        .attr("y1", yPosArr[selectedIndex])
-        .attr("x2", recX)
-        .attr("y2", receiverY)
-        .attr("stroke", "green")
-        .attr("stroke-width", 4)
-        .attr("opacity", 0.7);
-    });
   }
 }
+
 
 });

@@ -39,8 +39,9 @@ app.post('/generate-heatmap', (req, res) => {
     }
     console.log(stdout);
 
-    // Return URL to new PNG file (cache bust with timestamp)
-    res.json({ imageUrl: '/all_heatmaps.png?t=' + Date.now() });
+    // Return URL for PNG corresponding to the first K value requested (ks[0])
+  const k = ks[0];  // get the first requested K value
+  res.json({ imageUrl: `/heatmaps_resmodel_rank_${k}.png?t=` + Date.now() });
   });
 });
 
