@@ -34,9 +34,38 @@ for k in ks:
     M_svd = m_svd.reshape((16, 16))
     heatmaps.append({"k": k, "matrix": M_svd.tolist()})
 
-# Save data.json (optional)
+    R = G_k_pinv @ G
+    model_res_diag = np.diag(R)
+    model_res_diag_matrix = model_res_diag.reshape((16, 16))
+
+    # --------- NEW: Combine into triple-heatmap PNG (per K) --------
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    im0 = axes[0].imshow(M_svd, aspect='auto', cmap='viridis')
+    axes[0].set_title(f"TSVD inversion rank={k}", fontsize=12)
+    plt.colorbar(im0, ax=axes[0])
+
+    im1 = axes[1].imshow(R, aspect='auto', cmap='viridis')
+    axes[1].set_title(f"Resolution Matrix rank={k}", fontsize=12)
+    plt.colorbar(im1, ax=axes[1])
+
+    im2 = axes[2].imshow(model_res_diag_matrix, aspect='auto', cmap='viridis')
+    axes[2].set_title(f"Model Res. diag rank={k}", fontsize=12)
+    plt.colorbar(im2, ax=axes[2])
+
+    for ax in axes:
+        ax.set_xlabel('Index')
+        ax.set_ylabel('Index')
+
+    plt.tight_layout()
+    out_path = f"public/heatmaps_resmodel_rank_{k}.png"
+    plt.savefig(out_path, bbox_inches='tight', dpi=200)
+    plt.close()
+    print(f"Saved {out_path}")
+
+# Save data.json (optional, as before)
 with open("data.json", "w") as f:
     json.dump({"heatmaps": heatmaps}, f, indent=2)
+
 
 # ---- UPDATED LAYOUT CODE -----
 num_maps = len(heatmaps)
@@ -71,7 +100,7 @@ for j in range(num_maps, ncols * nrows):
     axs[j].axis('off')
 
 plt.tight_layout()
-plt.savefig("all_heatmaps.png", bbox_inches='tight', dpi=300)
+plt.savefig("public/all_heatmaps.png", bbox_inches='tight', dpi=300)
 plt.close()
 
 print(f"Generated all_heatmaps.png with Ks: {ks}")
