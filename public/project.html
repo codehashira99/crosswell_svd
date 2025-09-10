@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Borehole SVD Heatmaps</title>
+
+  <!-- Link your CSS -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- KaTeX for rendering SVD equation -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body);"></script>
+
+  <!-- Plotly for L-curve placeholder -->
+  <script src="https://cdn.plot.ly/plotly-2.31.1.min.js"></script>
+  <!-- D3 for ray path diagram -->
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+<body>
+  <div class="main-grid">
+    <!-- Left half: Ray path grid and controls -->
+    <div class="top-left raypath-card">
+      <h2 style="margin-top: 0;">SVD Borehole Visualization</h2>
+
+      <div id="depth-selection" style="margin-bottom:15px;">
+        <label for="source-depth"><b>Source depth:</b></label>
+        <select id="source-depth"></select>
+       
+      </div>
+
+      
+
+      <div class="plot-container" style="width: 100%; min-height: 950px; display: flex; justify-content: center; align-items: center; margin-top: 25px;">
+  <div id="plot" style="width: 90vw; height: 850px; min-height: 700px; background:#fff; border-radius:12px; box-shadow:0 0 16px #ddd;"></div>
+</div>
+
+
+      <div id="heatmap-controls" style="margin-top: 18px;">
+        <label for="k-values"><b>Singular values to use (K):</b></label><br/>
+        <input id="k-values" type="text" placeholder="e.g. 5,10,20" />
+        <button id="generate-heatmap-btn" style="margin-left: 10px;">Generate Heatmap</button>
+      </div>
+        
+      <!-- NEW: PNG pop-up button -->
+      
+
+      
+
+      <div style="margin-top: 18px; text-align: center;">
+        <img id="combined-heatmap" alt="Combined Heatmap" style="max-width: 98%; border: 1px solid #ccc; display:none; border-radius: 8px;" />
+      </div>
+    </div>
+
+    <!-- Right half: Stats card and L-curve -->
+    <div class="top-right stats-card">
+      <h3 class="section-title">Inversion Stats</h3>
+      <div><b>Matrix rank:</b> <span id="matrix-rank">--</span></div>
+      <div><b># Singular values:</b> <span id="num-singular">--</span></div>
+      <div><b># Data points:</b> <span id="num-data">--</span></div>
+      <div><b># Model params:</b> <span id="num-model">--</span></div>
+      <div><b>Type:</b> <span id="data-type">--</span></div>
+
+      <div style="margin: 20px 0 0 0;">
+        <b>SVD equation:</b>
+        <div id="svd-equation" style="margin-top: 10px;"></div>
+      </div>
+
+      <div style="margin-top: 30px;">
+        <div id="svd-explanation" style="font-family: Arial, sans-serif; margin: 20px; max-width: 700px;">
+  <h3>Matrix Terms of the SVD Equation</h3>
+  <p>
+    The Singular Value Decomposition (SVD) of a matrix <em>A</em> can be expressed as: 
+    <br>
+    <strong>A = U Σ V<sup>T</sup></strong>
+  </p>
+  <ul>
+    <li><strong>U:</strong> Orthogonal matrix containing left singular vectors.</li>
+    <li><strong>Σ (Sigma):</strong> Diagonal matrix of singular values representing the strength of each component.</li>
+    <li><strong>V<sup>T</sup>:</strong> Transpose of an orthogonal matrix containing right singular vectors.</li>
+  </ul>
+
+  <h3>Crosswell Tomography Using SVD Inversion</h3>
+  <p>
+    Crosswell Tomography uses seismic waves between boreholes to image subsurface properties. 
+    SVD inversion decomposes the system matrix, enabling stable reconstruction by filtering small singular values which reduces noise and improves the quality of the subsurface model.
+  </p>
+</div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for showing heatmap PNGs side-by-side -->
+<div id="svg-modal" style="
+  display:none;
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.6);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+">
+  <span id="close-modal" style="
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 36px;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+  ">&times;</span>
+
+  <div id="modal-img-container" style="display:flex; flex-direction:column; gap:20px; max-width:95vw; max-height:90vh; overflow:auto;">
+
+    <!-- Row 1: Green Heatmaps -->
+    <div id="heatmaps-row" style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+      <!-- Heatmap images will go here -->
+    </div>
+
+    <!-- Row 2: Resolution Matrices -->
+    <div id="resolution-row" style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+      <!-- Resolution matrix images will go here -->
+    </div>
+
+  </div>
+</div>
+
+
+
+
+  <script src="index.js"></script>
+</body>
+</html>

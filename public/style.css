@@ -14,11 +14,13 @@ body {
   border-radius: 16px;
   box-shadow: 0 2px 24px #dae4ef;
   max-width: 1600px;
-  min-height: 90vh;
-  margin: 40px auto 24px auto;
-  padding: 44px 40px 44px 48px;
+  min-height: 98vh;              /* Increased: makes grid almost full viewport height */
+  margin: 0;   /* Less space below grid, more above */
+  padding: 48px 40px 48px 48px;
   box-sizing: border-box;
+  overflow: visible !important;
 }
+
 
 /* Left column: raypath and controls */
 .top-left {
@@ -27,6 +29,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+   overflow: visible !important;
 }
 
 /* Ray plot container */
@@ -49,6 +52,11 @@ body {
 #combined-heatmap:not([src]) {
   border: none;
 }
+#source-depth {
+  position: relative;
+  z-index: 1000;
+}
+
 
 /* Right column: stats card + L-curve */
 .top-right {
@@ -79,13 +87,15 @@ body {
 
 /* Controls styling */
 input[type="text"], select {
-  padding: 8px 12px;
-  border-radius: 5px;
-  border: 1px solid #bbb;
-  font-size: 15px;
-  margin-right: 10px;
-  max-width: 160px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #bbb;
+    font-size: 15px;
+    margin-right: 10px;
+    /* max-width: 160px; */  /* Remove or increase */
+    min-width: 160px;
 }
+
 button {
   padding: 8px 18px;
   border-radius: 5px;
@@ -140,3 +150,67 @@ button:hover {
   justify-content: center;
 
 }
+/* ======================
+   Modal & Heatmap styles
+   ====================== */
+
+/* Modal full-screen overlay */
+#svg-modal {
+  display: none; /* hidden by default */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.7);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Close button hover effect */
+#close-modal:hover {
+  color: #ff5555;
+  transform: scale(1.2);
+  transition: 0.2s;
+}
+
+/* Modal container (holds rows) */
+#modal-img-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow: auto;
+  padding: 20px;
+}
+
+/* Rows inside modal */
+#heatmaps-row, 
+#resolution-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 10px 0;
+}
+
+/* Images inside modal */
+#heatmaps-row img, 
+#resolution-row img {
+  max-width: 45vw;
+  max-height: 75vh;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+  background: #fff;
+  padding: 6px;
+}
+
+/* Optional: row labels */
+.modal-label {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #f0f0f0;
+  margin-bottom: 5px;
+}
+

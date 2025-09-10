@@ -10,7 +10,7 @@ app.use(express.json());
 
 // Serve template.html explicitly on root '/'
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname,'public', 'template.html'));
+  res.sendFile(path.join(__dirname,'public', 'index.html'));
 });
 
 // Serve static frontend files from 'public' folder
@@ -39,9 +39,18 @@ app.post('/generate-heatmap', (req, res) => {
     }
     console.log(stdout);
 
-    // Return URL for PNG corresponding to the first K value requested (ks[0])
-  const k = ks[0];  // get the first requested K value
-  res.json({ imageUrl: `/heatmaps_resmodel_rank_${k}.png?t=` + Date.now() });
+  
+
+
+     
+
+    // ✅ Add per-K resolution PNGs
+    const matrixPngs = ks.map(k => `/heatmaps_resmodel_rank_${k}.png?t=` + Date.now());
+  res.json({
+      
+      matrices: matrixPngs
+    });
+
   });
 });
 
