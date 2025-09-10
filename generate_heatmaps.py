@@ -66,7 +66,7 @@ for k in ks:
 with open("data.json", "w") as f:
     json.dump({"heatmaps": heatmaps}, f, indent=2)
 
-
+'''
 # ---- UPDATED LAYOUT CODE -----
 num_maps = len(heatmaps)
 max_cols = 4
@@ -104,3 +104,4 @@ plt.savefig("public/all_heatmaps.png", bbox_inches='tight', dpi=300)
 plt.close()
 
 print(f"Generated all_heatmaps.png with Ks: {ks}")
+'''

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crosswell Tomography Lab</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+      max-width: 900px;
+    }
+    h1, h2 {
+      color: #004080;
+    }
+    section {
+      margin-bottom: 30px;
+    }
+    ol {
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Crosswell Tomography</h1>
+
+  <section id="theory">
+    <h2>Theory</h2>
+    <p>
+      Crosswell tomography uses seismic waves traveling between boreholes to image subsurface properties such as slowness or velocity variations. By measuring travel times from a source in one borehole to receivers in another, we build a system of equations Gm = d, where:
+    </p>
+    <ul>
+      <li><strong>G</strong> is the ray path matrix constructed from path lengths through discretized subsurface grid cells,</li>
+      <li><strong>m</strong> represents the unknown slowness anomaly model to be estimated,</li>
+      <li><strong>d</strong> contains the observed seismic travel times.</li>
+    </ul>
+    <p>
+      The solution of this inverse problem is often ill-posed or rank deficient, meaning that many models can fit the data equally well, and noise can destabilize direct inversion. Singular Value Decomposition (SVD) decomposes G into orthogonal components with associated singular values showing their significance.
+    </p>
+    <p>
+      Truncated SVD (TSVD) suppresses contributions from small singular values that amplify noise, producing a regularized minimum-length least squares solution. This process balances resolution and stability, allowing reliable imaging of subsurface features.
+    </p>
+
+    <h3>Key Concepts:</h3>
+    <ul>
+      <li><strong>Rank Deficiency:</strong> Indicates the number of independent constraints available; SVD helps identify this rank.</li>
+      <li><strong>Model Resolution:</strong> TSVD limits model complexity to stable components, with some smoothing of true features.</li>
+      <li><strong>Heatmap Visualization:</strong> Maps the spatial distribution of slowness anomalies, aiding geological interpretation.</li>
+    </ul>
+    <p>
+      This method is widely used in geophysical exploration and research for imaging the Earth's subsurface.
+    </p>
+  </section>
+
+  
+</body>
+</html>
