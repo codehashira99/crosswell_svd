@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import math
 from matplotlib.colors import LinearSegmentedColormap
 
-# Load .mat data
+# Load .mat data    
 mat = scipy.io.loadmat('crosswell.mat')
 G = mat['G']
 dn = mat['dn'].flatten()
