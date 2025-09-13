@@ -26,6 +26,7 @@ body {
 .top-left {
   grid-column: 1;
   min-width: 0;
+  position:relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -212,5 +213,23 @@ button:hover {
   font-size: 1.2rem;
   color: #f0f0f0;
   margin-bottom: 5px;
+}
+#depth-selection {
+  position: relative;
+  display: block;
+  width: fit-content;
+  margin-bottom: 15px;
+  z-index: 5; /* Ensure above backgrounds but below modals */
+}
+
+#source-depth {
+  position: relative; /* Let dropdown menu position itself below */
+  z-index: auto;
+  min-width: 220px;   /* wider for clarity */
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+}
+
+.top-left {
+  position: relative; /* Add this if not already present */
 }
 

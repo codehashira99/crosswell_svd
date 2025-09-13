@@ -133,75 +133,18 @@
 
     <div id="tab-pretest" class="dashboard-tab" style="display:none;">
   <h2>Pretest</h2>
-
-  <div id="content-pretest" class="content-section">
-    <h1>Crosswell Tomography using SVD Inversion</h1>
-    
-    <div class="quiz-container">
-      <div class="question">
-        <h4>1. What does SVD stand for in the context of geophysical inversion?</h4>
-        <div class="options">
-          <label><input type="radio" name="q1" value="a"> A. Seismic Velocity Distribution</label>
-          <label><input type="radio" name="q1" value="b"> B. Singular Value Decomposition</label>
-          <label><input type="radio" name="q1" value="c"> C. Subsurface Velocity Determination</label>
-          <label><input type="radio" name="q1" value="d"> D. Spatial Variance Distribution</label>
-        </div>
-      </div>
-
-      <div class="question">
-        <h4>2. In crosswell tomography, seismic sources and receivers are placed:</h4>
-        <div class="options">
-          <label><input type="radio" name="q2" value="a"> A. Both on the surface</label>
-          <label><input type="radio" name="q2" value="b"> B. In separate boreholes</label>
-          <label><input type="radio" name="q2" value="c"> C. In the same borehole</label>
-          <label><input type="radio" name="q2" value="d"> D. Underground randomly</label>
-        </div>
-      </div>
-
-      <div class="question">
-        <h4>3. The L-curve method is used for:</h4>
-        <div class="options">
-          <label><input type="radio" name="q3" value="a"> A. Ray path calculation</label>
-          <label><input type="radio" name="q3" value="b"> B. Velocity measurement</label>
-          <label><input type="radio" name="q3" value="c"> C. Selecting regularization parameter</label>
-          <label><input type="radio" name="q3" value="d"> D. Source positioning</label>
-        </div>
-      </div>
-
-      <div class="question">
-        <h4>4. In the equation G m = d, what does 'G' represent?</h4>
-        <div class="options">
-          <label><input type="radio" name="q4" value="a"> A. Velocity model</label>
-          <label><input type="radio" name="q4" value="b"> B. Travel time data</label>
-          <label><input type="radio" name="q4" value="c"> C. Jacobian matrix</label>
-          <label><input type="radio" name="q4" value="d"> D. Gravity field</label>
-        </div>
-      </div>
-
-      <div class="question">
-        <h4>5. Small singular values in SVD typically represent:</h4>
-        <div class="options">
-          <label><input type="radio" name="q5" value="a"> A. Strong signal components</label>
-          <label><input type="radio" name="q5" value="b"> B. Noise and unstable features</label>
-          <label><input type="radio" name="q5" value="c"> C. High-resolution features</label>
-          <label><input type="radio" name="q5" value="d"> D. Primary wave arrivals</label>
-        </div>
-      </div>
-
-      <button class="btn btn-primary" onclick="submitPretest()">Submit Quiz</button>
-      
-      <div id="pretest-result" class="score-display">
-        <h4>You scored <span id="pretest-score">0</span> out of 5.</h4>
-        <p id="pretest-message"></p>
-      </div>
-    </div>
+  <div id="pretest-iframe-container">
+    <iframe src="pretest.html" style="width:100%;height:700px;border:none;" allowfullscreen></iframe>
   </div>
+  
 </div>
 
 
     <div id="tab-procedure" class="dashboard-tab" style="display:none;">
       <h2>Procedure</h2>
-      <p>Procedure steps of your experiment go here.</p>
+       <div id="procedure-iframe-container">
+    <iframe src="procedure.html" style="width:100%;height:700px;border:none;" allowfullscreen></iframe>
+  </div>
     </div>
 
     <div id="tab-simulation" class="dashboard-tab" style="display:none;">
@@ -215,18 +158,20 @@
 
     <div id="tab-posttest" class="dashboard-tab" style="display:none;">
       <h2>Posttest</h2>
-      <p>Posttest quiz or follow-ups go here.</p>
+  <div id="posttest-iframe-container">
+    <iframe src="posttest.html" style="width:100%;height:700px;border:none;" allowfullscreen></iframe>
+  </div>
+  
     </div>
 
     <div id="tab-references" class="dashboard-tab" style="display:none;">
       <h2>References</h2>
-      <p>Reference materials and links go here.</p>
+    <div id="reference-iframe-container">
+    <iframe src="references.html" style="width:100%;height:700px;border:none;" allowfullscreen></iframe>
     </div>
 
     <div id="tab-feedback" class="dashboard-tab" style="display:none;">
       <h2>Feedback</h2>
-      <p>Feedback form or survey link goes here.</p>
-    </div>
   </div>
 
   <div class="vlabs-footer">
