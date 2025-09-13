@@ -208,6 +208,33 @@ svg.append("text")
   .text("SVD Ray Path Diagram: Depth vs Depth");
 
 
+  // Add numeric tick labels next to sources (left)
+yPosArr.forEach((y, i) => {
+  const depth = 1600 - i * 100;
+  if (depth === 0) return; // Skip label 0
+  svg.append("text")
+    .attr("x", 90)
+    .attr("y", y + 6)
+    .attr("text-anchor", "middle")
+    .style("font-size", "14px")
+    .style("fill", "#222")
+    .text(depth);
+});
+
+// Add numeric tick labels next to receivers (right)
+yPosArr.forEach((y, i) => {
+  const depth = 1600 - i * 100;
+  if (depth === 0) return; // Skip label 0
+  svg.append("text")
+    .attr("x", svgWidth - 90)
+    .attr("y", y + 6)
+    .attr("text-anchor", "middle")
+    .style("font-size", "14px")
+    .style("fill", "#222")
+    .text(depth);
+});
+
+
     // Grid
     const gridSpacing = 50;
     for (let x = 0; x <= svgWidth; x += gridSpacing) {

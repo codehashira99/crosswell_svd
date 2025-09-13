@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Procedure</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f8fafc;
+      margin: 0;
+      padding: 0;
+    }
+  
+    h2 {
+      margin-top: 0;
+    }
+    ol, ul {
+      margin-left: 28px;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+    b {
+      color: #17438b;
+    }
+    .note-tip {
+      background: #e6f3ff;
+      color: #154377;
+      padding: 12px 18px;
+      border-radius: 8px;
+      margin-top: 16px;
+      font-size: 1.05em;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  
+    <h2>Procedure</h2>
+    <h3>Experiment Procedure</h3>
+    <ol>
+      <li><b>Set up the crosswell measurement geometry</b> with source and receiver wells at carefully chosen depths to ensure thorough coverage of the subsurface area of interest.</li>
+      <li><b>Acquire seismic travel time data</b> across multiple source-receiver pairs by activating sources at various depths and recording arrivals at the receivers.</li>
+      <li><b>Construct the system matrix (A)</b> that relates travel times to model parameters, based on the geometry and an initial velocity model for the medium.</li>
+      <li><b>Apply Singular Value Decomposition (SVD)</b> to the system matrix to obtain matrices <b>U</b>, <b>&Sigma;</b>, and <b>V<sup>T</sup></b>. This step analyzes the stability and invertibility of the problem.</li>
+      <li><b>Filter small singular values</b> in <b>&Sigma;</b> to stabilize the inversion and reduce the impact of noise.</li>
+      <li><b>Use the filtered SVD to reconstruct the velocity/resolution model</b> of the subsurface between the boreholes by back-solving the SVD system.</li>
+      <li><b>Visualize the results</b> with heatmaps and raypath diagrams to analyze model resolution, data coverage, and geophysical features.</li>
+      <li><b>Iterate</b>: Repeat the procedure with different acquisition geometries or SVD regularization thresholds to study their influence on model clarity.</li>
+    </ol>
+    <h3>Notes</h3>
+    <ul>
+      <li><b>SVD inversion</b> is essential for robust seismic tomography—direct inversion is often unstable in practical scenarios.</li>
+      <li><b>Heatmaps and raypath plots</b> help identify areas of high and low model resolution, indicating where results are reliable.</li>
+      <li><b>Denser and more uniform raypath coverage</b> provides better resolution in the final model.</li>
+      <li>Repeat the experiment with different <b>source depths</b> or <b>singular value cutoffs</b> to improve understanding and model accuracy.</li>
+    </ul>
+    <div class="note-tip">
+      <b>Tip:</b> Always check the resolution and coverage maps before interpreting velocity variations. Poor data coverage or inadequate filtering can mislead tomographic analysis!
+    </div>
+  
+</body>
+</html>

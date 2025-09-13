@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Post-Test Quiz: SVD Tomography Mastery Check</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .option.green { background: #d4f8d4; color: #058b08 !important; border-radius:4px; }
+    .option.red   { background: #ffd3d3; color:#b91c1c !important; border-radius:4px; }
+    .score-line { margin-top:20px; font-weight:500; font-size:1.1em; }
+  </style>
+</head>
+<body>
+  <div style="max-width:700px;margin:42px auto;background:#fff;padding:32px;border-radius:12px;box-shadow:0px 3px 16px #eaeaea;">
+    <h2>Post-Test Quiz</h2>
+    <form id="posttest-quiz">
+      <div class="question">
+        <p>1. Why is SVD preferred in seismic tomography over direct inversion?</p>
+        <div class="option"><input type="radio" name="q1" value="A"> SVD avoids computational effort</div>
+        <div class="option"><input type="radio" name="q1" value="B"> SVD stabilizes inversion and manages noise efficiently</div>
+        <div class="option"><input type="radio" name="q1" value="C"> SVD increases model ambiguity</div>
+        <div class="option"><input type="radio" name="q1" value="D"> SVD ignores singular values</div>
+      </div>
+      <div class="question">
+        <p>2. What does a high-resolution region in the tomographic image indicate?</p>
+        <div class="option"><input type="radio" name="q2" value="A"> Poor data coverage</div>
+        <div class="option"><input type="radio" name="q2" value="B"> Reliable model parameters</div>
+        <div class="option"><input type="radio" name="q2" value="C"> Unstable inversion</div>
+        <div class="option"><input type="radio" name="q2" value="D"> Noise amplification</div>
+      </div>
+      <div class="question">
+        <p>3. In SVD tomography, which factor most determines model resolution?</p>
+        <div class="option"><input type="radio" name="q3" value="A"> Number of small singular values retained</div>
+        <div class="option"><input type="radio" name="q3" value="B"> Data coverage and experiment geometry</div>
+        <div class="option"><input type="radio" name="q3" value="C"> Type of receiver used</div>
+        <div class="option"><input type="radio" name="q3" value="D"> Time of data acquisition</div>
+      </div>
+      <div class="question">
+        <p>4. What is the role of heatmap visualizations in tomography experiments?</p>
+        <div class="option"><input type="radio" name="q4" value="A"> To display temperature maps</div>
+        <div class="option"><input type="radio" name="q4" value="B"> To show subsurface velocity or resolution distribution</div>
+        <div class="option"><input type="radio" name="q4" value="C"> To identify seismic sources</div>
+        <div class="option"><input type="radio" name="q4" value="D"> To predict earthquakes</div>
+      </div>
+      <div class="question">
+        <p>5. What is the main reason for filtering singular values in SVD?</p>
+        <div class="option"><input type="radio" name="q5" value="A"> To maximize solution size</div>
+        <div class="option"><input type="radio" name="q5" value="B"> To remove noise and unwanted instability from the solution</div>
+        <div class="option"><input type="radio" name="q5" value="C"> To generate more data</div>
+        <div class="option"><input type="radio" name="q5" value="D"> To ignore all data</div>
+      </div>
+      <button type="button" onclick="submitQuiz()">Submit Quiz</button>
+    </form>
+    <div class="score-line" id="score-line"></div>
+  </div>
+  <script>
+    const answers = {
+      q1: 'B',
+      q2: 'B',
+      q3: 'B',
+      q4: 'B',
+      q5: 'B'
+    };
+
+    function submitQuiz() {
+      let score = 0;
+      for (let i = 1; i <= 5; i++) {
+        const qName = 'q' + i;
+        const chosen = document.querySelector(`input[name="${qName}"]:checked`);
+        const correctVal = answers[qName];
+        const options = document.querySelectorAll(`input[name="${qName}"]`);
+        let marked = false;
+        options.forEach(opt => {
+          opt.parentElement.classList.remove('green','red');
+          if (opt.value === correctVal) {
+            if (chosen && chosen.value === correctVal) {
+              opt.parentElement.classList.add('green');
+              score++;
+              marked = true;
+            } else if (!chosen) {
+              opt.parentElement.classList.add('green');
+            } else {
+              opt.parentElement.classList.add('green');
+            }
+          } else {
+            if (chosen && opt === chosen) {
+              opt.parentElement.classList.add('red');
+            }
+          }
+        });
+      }
+      document.getElementById('score-line').textContent = `You scored ${score} out of 5.`;
+    }
+  </script>
+</body>
+</html>
