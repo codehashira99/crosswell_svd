@@ -2,5 +2,9 @@
   "dependencies": {
     "body-parser": "^2.2.0",
     "express": "^5.1.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "postinstall": "python3 -m venv venv && venv/bin/pip install -r requirements.txt"
   }
 }
