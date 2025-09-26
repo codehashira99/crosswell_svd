@@ -1,10 +1,32 @@
 {
-  "dependencies": {
-    "body-parser": "^2.2.0",
-    "express": "^5.1.0"
-  },
+  "name": "crosswell-tomography-svd",
+  "version": "1.0.0",
+  "description": "Crosswell Tomography using SVD Inversion - Pure JavaScript Implementation",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "postinstall": "python3 -m venv venv && venv/bin/pip install -r requirements.txt"
+    "dev": "nodemon server.js",
+    "test": "node generate_heatmaps.js 5 50 100"
+  },
+  "keywords": [
+    "crosswell",
+    "tomography",
+    "svd",
+    "geophysics",
+    "inversion",
+    "heatmap"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "express": "^4.18.2",
+    "ml-matrix": "^6.12.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
