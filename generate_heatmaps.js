@@ -2,7 +2,6 @@
 const fs = require('fs');
 const numeric = require('numeric');
 const { createCanvas } = require('canvas');
-const { SVD } = require('svd-js');
 
 function loadData(filepath) {
     const raw = fs.readFileSync(filepath);
@@ -110,34 +109,38 @@ function generateHeatmapImage(matrix, title, outputPath, colorScheme = 'viridis'
 function getColor(normalized, scheme = 'viridis') {
     // Clamp normalized value between 0 and 1
     normalized = Math.max(0, Math.min(1, normalized));
-    
-    // Viridis colormap approximation
+
+    // Viridis colormap approximation (matches matplotlib viridis)
     if (scheme === 'viridis') {
         const viridis = [
-            [68, 1, 84],
-            [59, 82, 139],
-            [33, 145, 140],
-            [94, 201, 98],
-            [253, 231, 37]
+            [68, 1, 84],      // purple (low values)
+            [59, 82, 139],    // dark blue
+            [33, 145, 140],   // teal/cyan
+            [94, 201, 98],    // green
+            [253, 231, 37]    // yellow (high values)
         ];
-        
+
+        if (normalized === 0) {
+            const color = viridis[0];
+            return `rgb(${color[0]},${color[1]},${color[2]})`;
+        }
+        if (normalized === 1) {
+            const color = viridis[viridis.length - 1];
+            return `rgb(${color[0]},${color[1]},${color[2]})`;
+        }
+
         const scaledIdx = normalized * (viridis.length - 1);
         const idx1 = Math.floor(scaledIdx);
         const idx2 = Math.min(idx1 + 1, viridis.length - 1);
         const t = scaledIdx - idx1;
-        
+
         const color1 = viridis[idx1];
         const color2 = viridis[idx2];
-        
-        if (!color1 || !color2) {
-            console.error('Color lookup failed:', { normalized, scaledIdx, idx1, idx2 });
-            return 'rgb(128, 128, 128)'; // Gray fallback
-        }
-        
+
         const r = Math.round(color1[0] * (1 - t) + color2[0] * t);
         const g = Math.round(color1[1] * (1 - t) + color2[1] * t);
         const b = Math.round(color1[2] * (1 - t) + color2[2] * t);
-        
+
         return `rgb(${r},${g},${b})`;
     }
     return `rgb(${normalized * 255}, ${normalized * 255}, ${normalized * 255})`;
@@ -189,30 +192,39 @@ function generateCombinedHeatmap(k, Msvd, R, modelResDiag, outputPath) {
 function normalizeMatrix(matrix) {
     const flat = matrix.flat();
     const validValues = flat.filter(x => Number.isFinite(x));
-    let min = Math.min(...validValues);
-    let max = Math.max(...validValues);
 
-    if (!Number.isFinite(min) || !Number.isFinite(max) || min === max) {
-        console.warn('Normalizing: invalid min/max for heatmap. Using default range.');
-        min = 0;
-        max = 1;
-        // Optionally: set entire matrix to zeros or a default value
+    if (validValues.length === 0) {
+        console.warn('Normalizing: no valid values found. Using zeros.');
         return matrix.map(row => row.map(_ => 0));
     }
 
-    // normalize to [0,1] range
-    return matrix.map(row => row.map(x => (x - min) / (max - min)));
+    let min = Math.min(...validValues);
+    let max = Math.max(...validValues);
+
+    if (!Number.isFinite(min) || !Number.isFinite(max)) {
+        console.warn('Normalizing: invalid min/max for heatmap. Using default range.');
+        min = 0;
+        max = 1;
+        return matrix.map(row => row.map(_ => 0));
+    }
+
+    if (min === max) {
+        // If all values are the same, return zeros
+        return matrix.map(row => row.map(_ => 0));
+    }
+
+    // Don't normalize - return original matrix for accurate plotting
+    return matrix;
 }
 
 function drawHeatmapOnCanvas(ctx, matrix, startX, startY, cellSize, title, colorScheme) {
-  matrix = normalizeMatrix(matrix);
-
+    // Don't call normalizeMatrix here - keep original values for accurate scaling
     const rows = matrix.length;
     const cols = matrix[0].length;
     const colorbarWidth = 30;
     const colorbarMargin = 15;
-    
-    // Find min/max
+
+    // Find min/max from raw matrix values
     let min = Infinity, max = -Infinity;
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
@@ -223,17 +235,19 @@ function drawHeatmapOnCanvas(ctx, matrix, startX, startY, cellSize, title, color
             }
         }
     }
-    
+
     // Handle edge cases
     if (!isFinite(min) || !isFinite(max)) {
-        console.error('Invalid min/max values in matrix');
+        console.error('Invalid min/max values in matrix for', title);
         min = 0;
         max = 1;
     }
-    
+
     if (min === max) {
-        max = min + 1; // Avoid division by zero
+        max = min + 1e-10; // Avoid division by zero with small epsilon
     }
+
+    console.log(`${title}: min=${min.toExponential(3)}, max=${max.toExponential(3)}`);
     
     // Draw cells
     for (let i = 0; i < rows; i++) {
@@ -266,62 +280,92 @@ function drawHeatmapOnCanvas(ctx, matrix, startX, startY, cellSize, title, color
     ctx.fillText('Index', 0, 0);
     ctx.restore();
     
-    // Colorbar
+    // Colorbar - match matplotlib orientation (max at top, min at bottom)
     const colorbarX = startX + cols * cellSize + colorbarMargin;
     const gradient = ctx.createLinearGradient(0, startY, 0, startY + rows * cellSize);
-    gradient.addColorStop(0, '#fde724');
-    gradient.addColorStop(0.25, '#35b779');
-    gradient.addColorStop(0.5, '#31688e');
-    gradient.addColorStop(1, '#440154');
-    
+    // Viridis colormap: purple (low) at top to yellow (high) at bottom - reversed for matplotlib orientation
+    gradient.addColorStop(0, '#fde724');  // yellow (max) at top
+    gradient.addColorStop(0.25, '#35b779'); // green
+    gradient.addColorStop(0.5, '#31688e');  // blue
+    gradient.addColorStop(0.75, '#31688e'); // dark blue
+    gradient.addColorStop(1, '#440154');    // purple (min) at bottom
+
     ctx.fillStyle = gradient;
     ctx.fillRect(colorbarX, startY, colorbarWidth, rows * cellSize);
     ctx.strokeRect(colorbarX, startY, colorbarWidth, rows * cellSize);
-    
-    // Colorbar labels
+
+    // Colorbar labels - max at top, min at bottom
     ctx.fillStyle = 'black';
     ctx.font = '10px Arial';
     ctx.textAlign = 'left';
-    ctx.fillText(max.toFixed(4), colorbarX + colorbarWidth + 3, startY + 10);
-    ctx.fillText(min.toFixed(4), colorbarX + colorbarWidth + 3, startY + rows * cellSize);
+    ctx.fillText(max.toExponential(2), colorbarX + colorbarWidth + 3, startY + 10);
+    ctx.fillText(min.toExponential(2), colorbarX + colorbarWidth + 3, startY + rows * cellSize - 5);
 }
 
 function computeHeatmaps(ks, {G, dn}) {
     console.log('Computing heatmaps for K values:', ks);
     console.log('G dimensions:', G.length, 'x', G[0]?.length);
     console.log('dn length:', dn.length);
-    
-    const {u, v, q: s} = SVD(G);
-    console.log('SVD computed. Singular values:', s.length);
-    
+
+    // Compute SVD using numeric.js (similar to numpy)
+    const svd = numeric.svd(G);
+    const U = svd.U;
+    const S = svd.S;  // Singular values as array
+    const V = svd.V;  // Already V, not V transpose
+
+    console.log('SVD computed. Singular values:', S.length);
+    console.log('U dimensions:', U.length, 'x', U[0]?.length);
+    console.log('V dimensions:', V.length, 'x', V[0]?.length);
+
     let outResults = [];
 
     ks.forEach(k => {
         console.log(`\nProcessing K=${k}`);
-        
-        const Uk = u.map(row => row.slice(0, k));
-        const Vk = v.map(row => row.slice(0, k));
-        const Sinvk = numeric.diag(Array.from(s).slice(0, k).map(val => 1 / val));
 
-        const Gkpinv = numeric.dot(numeric.dot(Vk, Sinvk), numeric.transpose(Uk));
+        // Extract first k columns of U and V
+        const Uk = U.map(row => row.slice(0, k));
+        const Vk = V.map(row => row.slice(0, k));
+        const Sk = S.slice(0, k);
+
+        // Create diagonal matrix of inverse singular values
+        const SinvDiag = numeric.diag(Sk.map(val => 1.0 / val));
+
+        // Compute pseudoinverse: G_k_pinv = V_k * S_inv_k * U_k^T
+        // Following Python: G_k_pinv = V_k @ S_inv_k @ U_k.T
+        const UkT = numeric.transpose(Uk);
+        const temp = numeric.dot(SinvDiag, UkT);
+        const Gkpinv = numeric.dot(Vk, temp);
+
+        // Compute model: m_svd = G_k_pinv @ dn
         const msvd = numeric.dot(Gkpinv, dn);
-        
-        console.log('msvd length:', msvd.length);
-        
-        let N = Math.round(Math.sqrt(msvd.length));
-        console.log('Reshaping to N x N grid, N=', N);
-        
-        let Msvd = [];
-        for (let i = 0; i < N; i++) Msvd.push(msvd.slice(i*N, (i+1)*N));
 
+        console.log('msvd length:', msvd.length);
+
+        // Reshape msvd to 16x16 matrix (same as Python: M_svd = m_svd.reshape((16, 16)))
+        const N = 16;  // Fixed as in Python
+        console.log('Reshaping to N x N grid, N=', N);
+
+        let Msvd = [];
+        for (let i = 0; i < N; i++) {
+            Msvd.push(msvd.slice(i*N, (i+1)*N));
+        }
+
+        // Compute resolution matrix: R = G_k_pinv @ G
         const R = numeric.dot(Gkpinv, G);
         console.log('Resolution matrix R dimensions:', R.length, 'x', R[0]?.length);
-        
-        const modelResDiag = numeric.diag(R);
+
+        // Get diagonal of resolution matrix
+        const modelResDiag = [];
+        for (let i = 0; i < Math.min(R.length, R[0]?.length || 0); i++) {
+            modelResDiag.push(R[i][i]);
+        }
         console.log('Model resolution diagonal length:', modelResDiag.length);
-        
+
+        // Reshape diagonal to 16x16 matrix (same as Python: model_res_diag.reshape((16, 16)))
         let modelResDiagMatrix = [];
-        for (let i = 0; i < N; i++) modelResDiagMatrix.push(modelResDiag.slice(i*N, (i+1)*N));
+        for (let i = 0; i < N; i++) {
+            modelResDiagMatrix.push(modelResDiag.slice(i*N, (i+1)*N));
+        }
 
         // Generate combined image
         const outputPath = `public/heatmaps_resmodel_rank_${k}.png`;
