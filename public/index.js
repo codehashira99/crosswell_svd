@@ -117,6 +117,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const sources = Array.isArray(srcs) ? srcs : [srcs];
 
     sources.forEach(src => {
+      // Ensure src is a string
+      if (typeof src !== 'string') {
+        console.warn('Invalid source type:', src);
+        return;
+      }
       const img = document.createElement("img");
       img.src = src.includes("?t=") ? src : src + "?t=" + Date.now();
       img.style.maxWidth = "45vw";

@@ -21,7 +21,9 @@
   "dependencies": {
     "canvas": "^2.11.2",
     "express": "^4.18.2",
-    "ml-matrix": "^6.12.1"
+    "ml-matrix": "^6.12.1",
+    "numeric": "^1.2.6",
+    "svd-js": "^1.1.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
