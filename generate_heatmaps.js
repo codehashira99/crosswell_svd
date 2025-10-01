@@ -159,12 +159,12 @@ function generateCombinedHeatmap(k, Msvd, R, modelResDiag, outputPath) {
     
     // For Resolution Matrix (R is N^2 x N^2)
     const R_size = R.length;
-    const R_cellSize = Math.max(2, Math.floor(400 / R_size));
-    const R_width = R_size * R_cellSize;
-    const R_height = R_size * R_cellSize;
+    const R_cellSize = Math.floor(singleWidth / R_size);  // Scale to match other heatmaps
+    const R_width = singleWidth;  // Same width as other heatmaps
+    const R_height = singleHeight;  // Same height as other heatmaps
     
     const totalWidth = singleWidth + spacing + R_width + spacing + singleWidth + margin * 2 + (colorbarWidth + colorbarMargin) * 3;
-    const totalHeight = Math.max(singleHeight, R_height) + margin * 2;
+    const totalHeight = singleHeight + margin * 2;  // All same height now
     
     const canvas = createCanvas(totalWidth, totalHeight);
     const ctx = canvas.getContext('2d');
