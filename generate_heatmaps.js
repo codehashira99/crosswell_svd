@@ -147,24 +147,20 @@ function getColor(normalized, scheme = 'viridis') {
 }
 
 function generateCombinedHeatmap(k, Msvd, R, modelResDiag, outputPath) {
-    const N = Msvd.length;
-    const cellSize = 15;
-    const margin = 100;
-    const spacing = 80;
-    const colorbarWidth = 30;
-    const colorbarMargin = 15;
+    const cellSize = 30;
+    const margin = 60;
+    const spacing = 40;
+    const colorbarWidth = 40;
+    const colorbarMargin = 20;
     
-    const singleWidth = N * cellSize;
-    const singleHeight = N * cellSize;
+    // All three display at same visual size (16×16 cells each)
+    const displaySize = 16;
+    const displayWidth = displaySize * cellSize;
+    const displayHeight = displaySize * cellSize;
     
-    // For Resolution Matrix (R is N^2 x N^2)
-    const R_size = R.length;
-    const R_cellSize = Math.floor(singleWidth / R_size);  // Scale to match other heatmaps
-    const R_width = singleWidth;  // Same width as other heatmaps
-    const R_height = singleHeight;  // Same height as other heatmaps
-    
-    const totalWidth = singleWidth + spacing + R_width + spacing + singleWidth + margin * 2 + (colorbarWidth + colorbarMargin) * 3;
-    const totalHeight = singleHeight + margin * 2;  // All same height now
+    // Total canvas dimensions (3 heatmaps side by side)
+    const totalWidth = displayWidth * 3 + spacing * 2 + margin * 2 + (colorbarWidth + colorbarMargin) * 3;
+    const totalHeight = displayHeight + margin * 2;
     
     const canvas = createCanvas(totalWidth, totalHeight);
     const ctx = canvas.getContext('2d');
