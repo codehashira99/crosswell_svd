@@ -147,43 +147,71 @@ function getColor(normalized, scheme = 'viridis') {
 }
 
 function generateCombinedHeatmap(k, Msvd, R, modelResDiag, outputPath) {
-    const cellSize = 30;
-    const margin = 60;
-    const spacing = 40;
-    const colorbarWidth = 40;
-    const colorbarMargin = 20;
-    
-    // All three display at same visual size (16×16 cells each)
-    const displaySize = 16;
-    const displayWidth = displaySize * cellSize;
-    const displayHeight = displaySize * cellSize;
-    
-    // Total canvas dimensions (3 heatmaps side by side)
-    const totalWidth = displayWidth * 3 + spacing * 2 + margin * 2 + (colorbarWidth + colorbarMargin) * 3;
-    const totalHeight = displayHeight + margin * 2;
-    
-    const canvas = createCanvas(totalWidth, totalHeight);
-    const ctx = canvas.getContext('2d');
-    
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, totalWidth, totalHeight);
-    
-    let currentX = margin;
-    
-    // 1. TSVD Inversion
-    drawHeatmapOnCanvas(ctx, Msvd, currentX, margin, cellSize, `TSVD inversion rank=${k}`, 'viridis');
-    currentX += singleWidth + colorbarWidth + colorbarMargin + spacing;
-    
-    // 2. Resolution Matrix
-    drawHeatmapOnCanvas(ctx, R, currentX, margin, R_cellSize, `Resolution Matrix rank=${k}`, 'viridis');
-    currentX += R_width + colorbarWidth + colorbarMargin + spacing;
-    
-    // 3. Model Resolution Diagonal
-    drawHeatmapOnCanvas(ctx, modelResDiag, currentX, margin, cellSize, `Model Res. diag rank=${k}`, 'viridis');
-    
-    const buffer = canvas.toBuffer('image/png');
-    fs.writeFileSync(outputPath, buffer);
-    console.log(`Saved combined heatmap: ${outputPath}`);
+    try {
+        // Msvd: 16×16
+        // R: 256×256 (full resolution matrix)
+        // modelResDiag: 16×16
+        
+        const cellSize = 30;
+        const margin = 60;
+        const spacing = 40;
+        const colorbarWidth = 40;
+        const colorbarMargin = 20;
+        
+        // All three display at same visual size (16×16 cells each)
+        const displaySize = 16;
+        const displayWidth = displaySize * cellSize;  // 480 pixels
+        const displayHeight = displaySize * cellSize; // 480 pixels
+        
+        // Total canvas dimensions (3 heatmaps side by side)
+        const totalWidth = displayWidth * 3 + spacing * 2 + margin * 2 + (colorbarWidth + colorbarMargin) * 3;
+        const totalHeight = displayHeight + margin * 2;
+        
+        const canvas = createCanvas(totalWidth, totalHeight);
+        const ctx = canvas.getContext('2d');
+        
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, totalWidth, totalHeight);
+        
+        let currentX = margin;
+        const baseY = margin;
+        
+        // 1. TSVD Inversion (16×16)
+        console.log(`Drawing TSVD inversion: ${Msvd.length}x${Msvd[0]?.length}`);
+        drawHeatmapOnCanvas(ctx, Msvd, currentX, baseY, cellSize, `TSVD inversion rank=${k}`, 'viridis');
+        currentX += displayWidth + colorbarWidth + colorbarMargin + spacing;
+        
+        // 2. Resolution Matrix (256×256) - SUBSAMPLE to 16×16
+        console.log(`Subsampling resolution matrix from ${R.length}x${R[0]?.length}...`);
+        
+        const R_display = [];
+        for (let i = 0; i < displaySize; i++) {
+            const row = [];
+            for (let j = 0; j < displaySize; j++) {
+                const sourceI = Math.floor(i * R.length / displaySize);
+                const sourceJ = Math.floor(j * R[sourceI].length / displaySize);
+                row.push(R[sourceI][sourceJ]);
+            }
+            R_display.push(row);
+        }
+        
+        console.log(`Subsampled resolution matrix to ${R_display.length}x${R_display[0].length}`);
+        drawHeatmapOnCanvas(ctx, R_display, currentX, baseY, cellSize, `Resolution Matrix rank=${k}`, 'viridis');
+        currentX += displayWidth + colorbarWidth + colorbarMargin + spacing;
+        
+        // 3. Model Resolution Diagonal (16×16)
+        console.log(`Drawing model resolution diagonal: ${modelResDiag.length}x${modelResDiag[0]?.length}`);
+        drawHeatmapOnCanvas(ctx, modelResDiag, currentX, baseY, cellSize, `Model Res. diag rank=${k}`, 'viridis');
+        
+        const buffer = canvas.toBuffer('image/png');
+        fs.writeFileSync(outputPath, buffer);
+        console.log(`Saved combined heatmap: ${outputPath}`);
+        
+    } catch (err) {
+        console.error('Error in generateCombinedHeatmap:', err.message);
+        console.error(err.stack);
+        throw err;
+    }
 }
 function normalizeMatrix(matrix) {
     const flat = matrix.flat();
